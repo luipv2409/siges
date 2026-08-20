@@ -36,6 +36,15 @@ function sanitize($value)
 function generate_csrf_token(): string
 {
     if (session_status() === PHP_SESSION_NONE) {
+        // Configuración segura de la cookie de sesión
+        session_name(SESSION_NAME);
+        session_set_cookie_params([
+            'lifetime' => SESSION_LIFETIME,
+            'path'     => '/',
+            'secure'   => false,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
         session_start();
     }
 
@@ -46,6 +55,7 @@ function generate_csrf_token(): string
     return $_SESSION['csrf_token'];
 }
 
+
 /**
  * Verifica que el token CSRF recibido coincida con el almacenado en sesión.
  *
@@ -54,6 +64,11 @@ function generate_csrf_token(): string
  */
 function verify_csrf_token(?string $token): bool
 {
+    // Si no hay cookie de sesión, no hay token CSRF almacenado
+    if (session_status() === PHP_SESSION_NONE && !isset($_COOKIE[session_name()])) {
+        return false;
+    }
+
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
@@ -65,6 +80,7 @@ function verify_csrf_token(?string $token): bool
     // Comparación segura contra timing attacks
     return hash_equals($_SESSION['csrf_token'], $token);
 }
+
 
 /**
  * Redirige a una URL específica y termina la ejecución del script.

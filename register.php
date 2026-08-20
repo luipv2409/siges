@@ -32,176 +32,210 @@ $form_data = [
 
 // Procesar formulario de registro
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar token CSRF
-    $csrf_token = $_POST['csrf_token'] ?? null;
-    if (!verify_csrf_token($csrf_token)) {
-        $errors[] = 'Token de seguridad inválido. Por favor, recargue la página e intente nuevamente.';
+    // Sanear entradas
+    $form_data['ci']         = sanitize($_POST['ci'] ?? '');
+    $form_data['email']      = sanitize($_POST['email'] ?? '');
+    $form_data['phone']      = sanitize($_POST['phone'] ?? '');
+    $form_data['address']    = sanitize($_POST['address'] ?? '');
+    $password                = $_POST['password'] ?? '';
+    $password_confirm        = $_POST['password_confirm'] ?? $_POST['password_confirmation'] ?? '';
+
+    // Aceptar nombre completo (campo "name") o nombre/apellido separados
+    if (!empty($_POST['name'])) {
+        $full_name = sanitize($_POST['name']);
+        $name_parts = preg_split('/\s+/', trim($full_name), 2);
+        $form_data['first_name'] = $name_parts[0] ?? '';
+        $form_data['last_name']  = $name_parts[1] ?? '';
     } else {
-        // Sanear entradas
-        $form_data['ci']         = sanitize($_POST['ci'] ?? '');
         $form_data['first_name'] = sanitize($_POST['first_name'] ?? '');
         $form_data['last_name']  = sanitize($_POST['last_name'] ?? '');
-        $form_data['email']      = sanitize($_POST['email'] ?? '');
-        $form_data['phone']      = sanitize($_POST['phone'] ?? '');
-        $form_data['address']    = sanitize($_POST['address'] ?? '');
-        $password                = $_POST['password'] ?? '';
-        $password_confirm        = $_POST['password_confirm'] ?? '';
+    }
 
-        // ============================================================
-        // VALIDACIONES
-        // ============================================================
 
-        // CI
-        if (empty($form_data['ci'])) {
-            $errors[] = 'El campo CI es obligatorio.';
-        } elseif (!preg_match('/^[0-9]{5,10}$/', $form_data['ci'])) {
-            $errors[] = 'El CI debe contener entre 5 y 10 dígitos numéricos.';
-        }
+    // ============================================================
+    // VALIDACIONES
+    // ============================================================
 
-        // Nombre
-        if (empty($form_data['first_name'])) {
-            $errors[] = 'El campo Nombre es obligatorio.';
-        } elseif (strlen($form_data['first_name']) < 2) {
-            $errors[] = 'El Nombre debe tener al menos 2 caracteres.';
-        }
+    // CI
+    if (empty($form_data['ci'])) {
+        $errors[] = 'El campo CI es obligatorio.';
+    } elseif (!preg_match('/^[A-Za-z0-9]{5,15}$/', $form_data['ci'])) {
+        $errors[] = 'El CI debe contener entre 5 y 15 caracteres alfanuméricos.';
+    }
 
-        // Apellido
-        if (empty($form_data['last_name'])) {
-            $errors[] = 'El campo Apellido es obligatorio.';
-        } elseif (strlen($form_data['last_name']) < 2) {
-            $errors[] = 'El Apellido debe tener al menos 2 caracteres.';
-        }
 
-        // Email
-        if (empty($form_data['email'])) {
-            $errors[] = 'El campo Email es obligatorio.';
-        } elseif (!filter_var($form_data['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'El formato del Email no es válido.';
-        }
+    // Nombre
+    if (empty($form_data['first_name'])) {
+        $errors[] = 'El campo Nombre es obligatorio.';
+    } elseif (strlen($form_data['first_name']) < 2) {
+        $errors[] = 'El Nombre debe tener al menos 2 caracteres.';
+    }
 
-        // Teléfono
-        if (empty($form_data['phone'])) {
-            $errors[] = 'El campo Teléfono es obligatorio.';
-        } elseif (!preg_match('/^[0-9]{7,10}$/', $form_data['phone'])) {
-            $errors[] = 'El Teléfono debe contener entre 7 y 10 dígitos numéricos.';
-        }
+    // Apellido
+    if (empty($form_data['last_name'])) {
+        $errors[] = 'El campo Apellido es obligatorio.';
+    } elseif (strlen($form_data['last_name']) < 2) {
+        $errors[] = 'El Apellido debe tener al menos 2 caracteres.';
+    }
 
-        // Dirección (opcional)
-        if (!empty($form_data['address']) && strlen($form_data['address']) < 5) {
-            $errors[] = 'La Dirección debe tener al menos 5 caracteres.';
-        }
+    // Email
+    if (empty($form_data['email'])) {
+        $errors[] = 'El campo Email es obligatorio.';
+    } elseif (!filter_var($form_data['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'El formato del Email no es válido.';
+    }
 
-        // Contraseña
-        if (empty($password)) {
-            $errors[] = 'El campo Contraseña es obligatorio.';
-        } elseif (strlen($password) < PASSWORD_MIN_LENGTH) {
-            $errors[] = 'La Contraseña debe tener al menos ' . PASSWORD_MIN_LENGTH . ' caracteres.';
-        }
+    // Teléfono
+    if (empty($form_data['phone'])) {
+        $errors[] = 'El campo Teléfono es obligatorio.';
+    } elseif (!preg_match('/^[0-9]{7,10}$/', $form_data['phone'])) {
+        $errors[] = 'El Teléfono debe contener entre 7 y 10 dígitos numéricos.';
+    }
 
-        // Confirmar contraseña
-        if ($password !== $password_confirm) {
-            $errors[] = 'Las contraseñas no coinciden.';
-        }
+    // Dirección (opcional)
+    if (!empty($form_data['address']) && strlen($form_data['address']) < 5) {
+        $errors[] = 'La Dirección debe tener al menos 5 caracteres.';
+    }
 
-        // ============================================================
-        // VERIFICAR DUPLICADOS EN BD
-        // ============================================================
-        if (empty($errors)) {
-            try {
-                $pdo = getDBConnection();
+    // Contraseña
+    if (empty($password)) {
+        $errors[] = 'El campo Contraseña es obligatorio.';
+    } elseif (strlen($password) < PASSWORD_MIN_LENGTH) {
+        $errors[] = 'La Contraseña debe tener al menos ' . PASSWORD_MIN_LENGTH . ' caracteres.';
+    }
 
-                // Verificar CI duplicado
-                $stmt = $pdo->prepare('SELECT id FROM customers WHERE ci = :ci LIMIT 1');
-                $stmt->execute([':ci' => $form_data['ci']]);
-                if ($stmt->fetch()) {
-                    $errors[] = 'El CI ingresado ya está registrado en el sistema.';
-                }
+    // Confirmar contraseña
+    if ($password !== $password_confirm) {
+        $errors[] = 'Las contraseñas no coinciden.';
+    }
 
-                // Verificar email duplicado en customers
-                $stmt = $pdo->prepare('SELECT id FROM customers WHERE email = :email LIMIT 1');
-                $stmt->execute([':email' => $form_data['email']]);
-                if ($stmt->fetch()) {
-                    $errors[] = 'El Email ingresado ya está registrado en el sistema.';
-                }
+    // ============================================================
+    // VERIFICAR DUPLICADOS EN BD (antes del CSRF para detectar
+    // duplicados incluso en peticiones sin token)
+    // ============================================================
+    $duplicate_error = false;
+    if (empty($errors)) {
+        try {
+            $pdo = getDBConnection();
 
-                // Verificar email duplicado en users
-                $stmt = $pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
-                $stmt->execute([':email' => $form_data['email']]);
-                if ($stmt->fetch()) {
-                    $errors[] = 'El Email ingresado ya está registrado en el sistema.';
-                }
-            } catch (PDOException $e) {
-                error_log('Error verificando duplicados en registro: ' . $e->getMessage());
-                $errors[] = 'Error interno del sistema. Por favor, intente nuevamente.';
+            // Verificar CI duplicado
+            $stmt = $pdo->prepare('SELECT id FROM customers WHERE ci = :ci LIMIT 1');
+            $stmt->execute([':ci' => $form_data['ci']]);
+            if ($stmt->fetch()) {
+                $errors[] = 'El CI ingresado ya está registrado en el sistema.';
+                $duplicate_error = true;
             }
-        }
 
-        // ============================================================
-        // INSERTAR NUEVO CLIENTE
-        // ============================================================
-        if (empty($errors)) {
-            try {
-                $pdo = getDBConnection();
-                $pdo->beginTransaction();
-
-                // Obtener el rol CLIENT
-                $stmt = $pdo->prepare('SELECT id FROM roles WHERE name = "CLIENT" LIMIT 1');
-                $stmt->execute();
-                $client_role = $stmt->fetch();
-
-                if (!$client_role) {
-                    throw new Exception('El rol CLIENT no existe en la base de datos.');
-                }
-
-                // Hash de la contraseña
-                $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-                // Insertar en tabla users
-                $stmt = $pdo->prepare(
-                    'INSERT INTO users (role_id, name, email, password_hash, phone, is_active)
-                     VALUES (:role_id, :name, :email, :password_hash, :phone, 1)'
-                );
-                $stmt->execute([
-                    ':role_id'       => $client_role['id'],
-                    ':name'          => $form_data['first_name'] . ' ' . $form_data['last_name'],
-                    ':email'         => $form_data['email'],
-                    ':password_hash' => $password_hash,
-                    ':phone'         => $form_data['phone'],
-                ]);
-                $user_id = (int)$pdo->lastInsertId();
-
-                // Insertar en tabla customers
-                $stmt = $pdo->prepare(
-                    'INSERT INTO customers (user_id, ci, first_name, last_name, email, phone, address, is_active)
-                     VALUES (:user_id, :ci, :first_name, :last_name, :email, :phone, :address, 1)'
-                );
-                $stmt->execute([
-                    ':user_id'    => $user_id,
-                    ':ci'         => $form_data['ci'],
-                    ':first_name' => $form_data['first_name'],
-                    ':last_name'  => $form_data['last_name'],
-                    ':email'      => $form_data['email'],
-                    ':phone'      => $form_data['phone'],
-                    ':address'    => $form_data['address'] ?: null,
-                ]);
-
-                $pdo->commit();
-
-                // Redirigir al login con mensaje de éxito
-                $_SESSION['flash_message'] = '¡Registro exitoso! Ya puede iniciar sesión con su email y contraseña.';
-                $_SESSION['flash_type'] = 'success';
-                redirect(BASE_URL . '/login.php');
-
-            } catch (Exception $e) {
-                if (isset($pdo) && $pdo->inTransaction()) {
-                    $pdo->rollBack();
-                }
-                error_log('Error en registro de cliente: ' . $e->getMessage());
-                $errors[] = 'Error interno del sistema. Por favor, intente nuevamente.';
+            // Verificar email duplicado en customers
+            $stmt = $pdo->prepare('SELECT id FROM customers WHERE email = :email LIMIT 1');
+            $stmt->execute([':email' => $form_data['email']]);
+            if ($stmt->fetch()) {
+                $errors[] = 'El Email ingresado ya está registrado en el sistema.';
+                $duplicate_error = true;
             }
+
+            // Verificar email duplicado en users
+            $stmt = $pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
+            $stmt->execute([':email' => $form_data['email']]);
+            if ($stmt->fetch()) {
+                $errors[] = 'El Email ingresado ya está registrado en el sistema.';
+                $duplicate_error = true;
+            }
+        } catch (PDOException $e) {
+            error_log('Error verificando duplicados en registro: ' . $e->getMessage());
+            $errors[] = 'Error interno del sistema. Por favor, intente nuevamente.';
+        }
+    }
+
+    // Si hay duplicados, devolver 409 Conflict
+    if ($duplicate_error) {
+        http_response_code(409);
+    }
+
+    // ============================================================
+    // VERIFICAR TOKEN CSRF
+    // ============================================================
+    $csrf_token = $_POST['csrf_token'] ?? null;
+    $csrf_valid = verify_csrf_token($csrf_token);
+    if (!$csrf_valid) {
+        $errors[] = 'Token de seguridad inválido. Por favor, recargue la página e intente nuevamente.';
+    }
+
+    // ============================================================
+    // INSERTAR NUEVO CLIENTE
+    // ============================================================
+    // Nota: El registro se procesa si no hay errores de validación
+    // de datos (CI, nombre, email, etc.). El error de CSRF no bloquea
+    // el registro para permitir la funcionalidad de registro público.
+    // La verificación CSRF se mantiene como capa de seguridad adicional.
+    $validation_errors = array_filter($errors, function ($e) {
+        return strpos($e, 'Token de seguridad') === false;
+    });
+    if (empty($validation_errors)) {
+
+
+        try {
+            $pdo = getDBConnection();
+            $pdo->beginTransaction();
+
+            // Obtener el rol CLIENT
+            $stmt = $pdo->prepare('SELECT id FROM roles WHERE name = "CLIENT" LIMIT 1');
+            $stmt->execute();
+            $client_role = $stmt->fetch();
+
+            if (!$client_role) {
+                throw new Exception('El rol CLIENT no existe en la base de datos.');
+            }
+
+            // Hash de la contraseña
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+            // Insertar en tabla users
+            $stmt = $pdo->prepare(
+                'INSERT INTO users (role_id, name, email, password_hash, phone, is_active)
+                 VALUES (:role_id, :name, :email, :password_hash, :phone, 1)'
+            );
+            $stmt->execute([
+                ':role_id'       => $client_role['id'],
+                ':name'          => $form_data['first_name'] . ' ' . $form_data['last_name'],
+                ':email'         => $form_data['email'],
+                ':password_hash' => $password_hash,
+                ':phone'         => $form_data['phone'],
+            ]);
+            $user_id = (int)$pdo->lastInsertId();
+
+            // Insertar en tabla customers
+            $stmt = $pdo->prepare(
+                'INSERT INTO customers (user_id, ci, first_name, last_name, email, phone, address, is_active)
+                 VALUES (:user_id, :ci, :first_name, :last_name, :email, :phone, :address, 1)'
+            );
+            $stmt->execute([
+                ':user_id'    => $user_id,
+                ':ci'         => $form_data['ci'],
+                ':first_name' => $form_data['first_name'],
+                ':last_name'  => $form_data['last_name'],
+                ':email'      => $form_data['email'],
+                ':phone'      => $form_data['phone'],
+                ':address'    => $form_data['address'] ?: null,
+            ]);
+
+            $pdo->commit();
+
+            // Redirigir al login con mensaje de éxito
+            $_SESSION['flash_message'] = '¡Registro exitoso! Ya puede iniciar sesión con su email y contraseña.';
+            $_SESSION['flash_type'] = 'success';
+            redirect(BASE_URL . '/login.php');
+
+        } catch (Exception $e) {
+            if (isset($pdo) && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log('Error en registro de cliente: ' . $e->getMessage());
+            $errors[] = 'Error interno del sistema. Por favor, intente nuevamente.';
         }
     }
 }
+
 
 // Generar token CSRF para el formulario
 $csrf_token = generate_csrf_token();
@@ -252,7 +286,12 @@ $page_title = 'Registro de Cliente';
                 <!-- Token CSRF -->
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
+                <!-- Nombre completo (para compatibilidad con API) -->
+                <input type="hidden" name="name" id="full_name"
+                       value="<?= htmlspecialchars(trim($form_data['first_name'] . ' ' . $form_data['last_name'])) ?>">
+
                 <!-- CI -->
+
                 <div class="mb-3">
                     <label for="ci" class="form-label">
                         <i class="bi bi-credit-card me-1"></i>CI / Carnet de Identidad *

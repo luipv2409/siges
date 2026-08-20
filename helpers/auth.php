@@ -34,9 +34,15 @@ function ensure_session(): void
  */
 function is_logged_in(): bool
 {
+    // Solo iniciar sesión si ya existe una cookie de sesión
+    // (evita crear sesiones innecesarias en páginas públicas)
+    if (session_status() === PHP_SESSION_NONE && !isset($_COOKIE[session_name()])) {
+        return false;
+    }
     ensure_session();
     return !empty($_SESSION['user_id']);
 }
+
 
 /**
  * Verifica si el usuario autenticado tiene uno de los roles permitidos.

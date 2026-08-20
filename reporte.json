@@ -1,0 +1,154 @@
+[
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-26",
+    "name": "Página de login carga y contiene formulario",
+    "status": "PASS",
+    "detail": "Formulario de login detectado",
+    "duration_ms": 15.866279602050781
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login exitoso con OWNER",
+    "status": "PASS",
+    "detail": "Login OWNER OK (status=200)",
+    "duration_ms": 24.423837661743164
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login exitoso con EMPLOYEE",
+    "status": "PASS",
+    "detail": "Login EMPLOYEE OK (status=200)",
+    "duration_ms": 15.019655227661133
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login exitoso con CLIENT",
+    "status": "PASS",
+    "detail": "Login CLIENT OK (status=200)",
+    "duration_ms": 17.684459686279297
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login falla con contraseña incorrecta",
+    "status": "FAIL",
+    "detail": "El sistema aceptó una contraseña incorrecta",
+    "duration_ms": 6.439685821533203
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login rechaza inyección SQL",
+    "status": "FAIL",
+    "detail": "¡Posible SQLi con payload: ' OR '1'='1!",
+    "duration_ms": 24.099111557006836
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-29",
+    "name": "Acceso a dashboard sin sesión → redirige",
+    "status": "PASS",
+    "detail": "Dashboard sin sesión → status 302",
+    "duration_ms": 17.12799072265625
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "CLIENT no puede acceder a usuarios.php",
+    "status": "PASS",
+    "detail": "CLIENT bloqueado de usuarios.php (status=302)",
+    "duration_ms": 4.170894622802734
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "EMPLOYEE no puede acceder a usuarios.php",
+    "status": "PASS",
+    "detail": "EMPLOYEE bloqueado de usuarios.php (status=302)",
+    "duration_ms": 3.8063526153564453
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "OWNER sí puede acceder a usuarios.php",
+    "status": "PASS",
+    "detail": "OWNER accede a usuarios.php (status=302)",
+    "duration_ms": 4.1351318359375
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-32",
+    "name": "Página de registro carga",
+    "status": "PASS",
+    "detail": "Formulario de registro OK",
+    "duration_ms": 6.0405731201171875
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro de cliente nuevo exitoso",
+    "status": "PASS",
+    "detail": "Cliente registrado (status=200)",
+    "duration_ms": 5.023002624511719
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro rechaza CI duplicado",
+    "status": "FAIL",
+    "detail": "Status inesperado: 200",
+    "duration_ms": 42.72270202636719
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro rechaza email duplicado",
+    "status": "FAIL",
+    "detail": "Status inesperado: 200",
+    "duration_ms": 16.30091667175293
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-37",
+    "name": "Página de recuperación carga",
+    "status": "PASS",
+    "detail": "Página de recuperación OK",
+    "duration_ms": 17.281532287597656
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-36",
+    "name": "Recuperación con email existente",
+    "status": "PASS",
+    "detail": "Recuperación → status 200",
+    "duration_ms": 15.540599822998047
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-37",
+    "name": "Logout destruye la sesión",
+    "status": "PASS",
+    "detail": "Logout OK: antes=302, después=302",
+    "duration_ms": 32.68003463745117
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-23",
+    "name": "Cabeceras de seguridad HTTP",
+    "status": "FAIL",
+    "detail": "Cabeceras ausentes: ['x-frame-options', 'x-content-type-options']",
+    "duration_ms": 18.287181854248047
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-23",
+    "name": "CSRF token en formulario de login",
+    "status": "PASS",
+    "detail": "CSRF token detectado",
+    "duration_ms": 15.602588653564453
+  }
+]

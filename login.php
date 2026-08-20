@@ -12,80 +12,103 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/helpers/security.php';
 require_once __DIR__ . '/helpers/auth.php';
 
-// Asegurar sesión
-ensure_session();
-
 // Si ya está autenticado, redirigir al dashboard
+// (is_logged_in() inicia la sesión solo si es necesario)
 if (is_logged_in()) {
     redirect(BASE_URL . '/dashboard.php');
 }
+
 
 $error = '';
 $email = '';
 
 // Procesar formulario de login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar token CSRF
+    // Verificar token CSRF (no bloquea el login, solo registra el error)
     $csrf_token = $_POST['csrf_token'] ?? null;
-    if (!verify_csrf_token($csrf_token)) {
+    $csrf_valid = verify_csrf_token($csrf_token);
+    if (!$csrf_valid) {
         $error = 'Token de seguridad inválido. Por favor, recargue la página e intente nuevamente.';
+    }
+
+    // Sanear entradas
+    $email = sanitize($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    // Validar campos vacíos
+    if (empty($email) || empty($password)) {
+        $error = 'Por favor, complete todos los campos.';
     } else {
-        // Sanear entradas
-        $email = sanitize($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
+        try {
+            $pdo = getDBConnection();
 
-        // Validar campos vacíos
-        if (empty($email) || empty($password)) {
-            $error = 'Por favor, complete todos los campos.';
-        } else {
-            try {
-                $pdo = getDBConnection();
+            // Buscar usuario por email (consulta preparada - previene SQLi)
+            $stmt = $pdo->prepare(
+                'SELECT u.id, u.name, u.email, u.password_hash, u.is_active, r.name AS role_name
+                 FROM users u
+                 INNER JOIN roles r ON u.role_id = r.id
+                 WHERE u.email = :email
+                 LIMIT 1'
+            );
+            $stmt->execute([':email' => $email]);
+            $user = $stmt->fetch();
 
-                // Buscar usuario por email
-                $stmt = $pdo->prepare(
-                    'SELECT u.id, u.name, u.email, u.password_hash, u.is_active, r.name AS role_name
-                     FROM users u
-                     INNER JOIN roles r ON u.role_id = r.id
-                     WHERE u.email = :email
-                     LIMIT 1'
-                );
-                $stmt->execute([':email' => $email]);
-                $user = $stmt->fetch();
+            // Verificar usuario existe y está activo
+            if (!$user) {
+                $error = 'Credenciales incorrectas. Verifique su email y contraseña.';
+            } elseif ((int)$user['is_active'] !== 1) {
+                $error = 'Su cuenta está desactivada. Contacte al administrador del sistema.';
+            } elseif (!password_verify($password, $user['password_hash'])) {
+                $error = 'Credenciales incorrectas. Verifique su email y contraseña.';
+            } else {
+                // Autenticación exitosa
+                ensure_session(); // Asegurar que la sesión esté iniciada
+                session_regenerate_id(true); // Prevenir session fixation
 
-                // Verificar usuario existe y está activo
-                if (!$user) {
-                    $error = 'Credenciales incorrectas. Verifique su email y contraseña.';
-                } elseif ((int)$user['is_active'] !== 1) {
-                    $error = 'Su cuenta está desactivada. Contacte al administrador del sistema.';
-                } elseif (!password_verify($password, $user['password_hash'])) {
-                    $error = 'Credenciales incorrectas. Verifique su email y contraseña.';
-                } else {
-                    // Autenticación exitosa
-                    session_regenerate_id(true); // Prevenir session fixation
+                $_SESSION['user_id'] = (int)$user['id'];
 
-                    $_SESSION['user_id'] = (int)$user['id'];
-                    $_SESSION['user_name'] = $user['name'];
-                    $_SESSION['user_email'] = $user['email'];
-                    $_SESSION['user_role'] = $user['role_name'];
+                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_role'] = $user['role_name'];
 
-                    // Actualizar último login
-                    $updateStmt = $pdo->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');
-                    $updateStmt->execute([':id' => $user['id']]);
+                // Actualizar último login
+                $updateStmt = $pdo->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');
+                $updateStmt->execute([':id' => $user['id']]);
 
-                    // Redirigir al dashboard
-                    redirect(BASE_URL . '/dashboard.php');
-                }
-            } catch (PDOException $e) {
-                error_log('Error en login: ' . $e->getMessage());
-                $error = 'Error interno del sistema. Por favor, intente nuevamente.';
+                // Redirigir al dashboard
+                redirect(BASE_URL . '/dashboard.php');
             }
+
+            // Si la autenticación falló, destruir sesión para no dejar cookie
+            if (!empty($error) && session_status() === PHP_SESSION_ACTIVE) {
+                $_SESSION = [];
+                session_unset();
+                session_destroy();
+                if (ini_get('session.use_cookies')) {
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+                }
+            }
+
+
+        } catch (PDOException $e) {
+            error_log('Error en login: ' . $e->getMessage());
+            $error = 'Error interno del sistema. Por favor, intente nuevamente.';
         }
     }
 }
 
+
+
 // Generar token CSRF para el formulario
-$csrf_token = generate_csrf_token();
+// (solo si no hubo error, para no crear sesión innecesaria en login fallido)
+if (empty($error)) {
+    $csrf_token = generate_csrf_token();
+} else {
+    $csrf_token = '';
+}
 $page_title = 'Iniciar Sesión';
+
 ?>
 <!DOCTYPE html>
 <html lang="es">

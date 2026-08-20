@@ -42,3 +42,13 @@ define('SESSION_LIFETIME', 7200); // 2 horas en segundos
 define('PASSWORD_MIN_LENGTH', 8);
 define('MAX_LOGIN_ATTEMPTS', 5);
 define('LOGIN_LOCKOUT_MINUTES', 15);
+
+// ============================================================
+// CABECERAS DE SEGURIDAD HTTP
+// ============================================================
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('X-XSS-Protection: 1; mode=block');
+
+

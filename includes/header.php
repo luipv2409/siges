@@ -15,10 +15,12 @@ require_once __DIR__ . '/../helpers/security.php';
 ensure_session();
 
 // Determinar si el usuario está autenticado y su rol
+
 $is_logged = is_logged_in();
 $user_role = $_SESSION['user_role'] ?? '';
 $user_name = $_SESSION['user_name'] ?? '';
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
