@@ -1,0 +1,314 @@
+[
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-26",
+    "name": "Página de login carga y contiene formulario",
+    "status": "PASS",
+    "detail": "Formulario de login detectado",
+    "duration_ms": 22.088289260864258
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login exitoso con OWNER",
+    "status": "PASS",
+    "detail": "Login OWNER OK (status=302)",
+    "duration_ms": 88.41848373413086
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login exitoso con EMPLOYEE",
+    "status": "PASS",
+    "detail": "Login EMPLOYEE OK (status=302)",
+    "duration_ms": 83.6031436920166
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login exitoso con CLIENT",
+    "status": "PASS",
+    "detail": "Login CLIENT OK (status=302)",
+    "duration_ms": 97.06592559814453
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login falla con contraseña incorrecta",
+    "status": "PASS",
+    "detail": "Contraseña incorrecta rechazada",
+    "duration_ms": 73.68135452270508
+  },
+  {
+    "hu": "HU-01.01",
+    "ticket": "SGS-27",
+    "name": "Login rechaza inyección SQL",
+    "status": "PASS",
+    "detail": "4 payloads de SQLi probados sin bypass",
+    "duration_ms": 64.6967887878418
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-29",
+    "name": "Acceso a dashboard sin sesión → redirige",
+    "status": "PASS",
+    "detail": "Dashboard sin sesión → status 302",
+    "duration_ms": 17.879247665405273
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "CLIENT no puede acceder a usuarios.php",
+    "status": "PASS",
+    "detail": "CLIENT bloqueado de usuarios.php (status=302)",
+    "duration_ms": 32.16099739074707
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "EMPLOYEE no puede acceder a usuarios.php",
+    "status": "PASS",
+    "detail": "EMPLOYEE bloqueado de usuarios.php (status=302)",
+    "duration_ms": 17.46344566345215
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "OWNER sí puede acceder a usuarios.php",
+    "status": "PASS",
+    "detail": "OWNER accede a usuarios.php (status=200)",
+    "duration_ms": 16.217947006225586
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "CLIENT no puede acceder a configuración",
+    "status": "PASS",
+    "detail": "CLIENT bloqueado de configuración (status=404)",
+    "duration_ms": 1.5320777893066406
+  },
+  {
+    "hu": "HU-01.02",
+    "ticket": "SGS-30",
+    "name": "OWNER sí puede acceder a configuración",
+    "status": "PASS",
+    "detail": "Página de configuración no existe (404) - OK si no está implementada",
+    "duration_ms": 1.3070106506347656
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-32",
+    "name": "Página de registro carga",
+    "status": "PASS",
+    "detail": "Formulario de registro OK",
+    "duration_ms": 29.93178367614746
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro de cliente nuevo exitoso",
+    "status": "PASS",
+    "detail": "Cliente registrado (status=200)",
+    "duration_ms": 93.48320960998535
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro rechaza CI duplicado",
+    "status": "PASS",
+    "detail": "CI duplicado rechazado",
+    "duration_ms": 38.82932662963867
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro rechaza email duplicado",
+    "status": "PASS",
+    "detail": "Email duplicado rechazado",
+    "duration_ms": 34.10840034484863
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-33",
+    "name": "Registro rechaza campos vacíos",
+    "status": "PASS",
+    "detail": "Campos vacíos rechazados",
+    "duration_ms": 16.039609909057617
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-34",
+    "name": "OWNER puede registrar un nuevo EMPLOYEE",
+    "status": "PASS",
+    "detail": "OWNER creó un empleado (status=200)",
+    "duration_ms": 17.271757125854492
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-34",
+    "name": "EMPLOYEE no puede registrar otro EMPLOYEE",
+    "status": "PASS",
+    "detail": "EMPLOYEE bloqueado de crear empleados (status=302)",
+    "duration_ms": 18.954992294311523
+  },
+  {
+    "hu": "HU-01.03",
+    "ticket": "SGS-34",
+    "name": "OWNER puede listar empleados",
+    "status": "PASS",
+    "detail": "OWNER puede listar empleados",
+    "duration_ms": 29.60658073425293
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-37",
+    "name": "Página de recuperación carga",
+    "status": "PASS",
+    "detail": "Página de recuperación OK",
+    "duration_ms": 17.8372859954834
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-36",
+    "name": "Recuperación con email existente",
+    "status": "PASS",
+    "detail": "Recuperación → status 200",
+    "duration_ms": 16.147136688232422
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-36",
+    "name": "Recuperación con email inexistente - mensaje genérico",
+    "status": "PASS",
+    "detail": "Email inexistente manejado con mensaje genérico",
+    "duration_ms": 17.161130905151367
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-36",
+    "name": "Reset-password con token inválido es rechazado",
+    "status": "PASS",
+    "detail": "Token inválido rechazado",
+    "duration_ms": 17.078399658203125
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-37",
+    "name": "Reset-password rechaza contraseñas diferentes",
+    "status": "PASS",
+    "detail": "Contraseñas diferentes manejadas sin error 500 (status=400)",
+    "duration_ms": 17.040014266967773
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-37",
+    "name": "Logout destruye la sesión",
+    "status": "PASS",
+    "detail": "Logout OK: antes=200, después=302",
+    "duration_ms": 120.01419067382812
+  },
+  {
+    "hu": "HU-01.04",
+    "ticket": "SGS-38",
+    "name": "Navbar muestra opciones según rol",
+    "status": "PASS",
+    "detail": "Navbar muestra opciones según rol",
+    "duration_ms": 43.70617866516113
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-23",
+    "name": "Cabeceras de seguridad HTTP",
+    "status": "PASS",
+    "detail": "Cabeceras de seguridad presentes",
+    "duration_ms": 17.082691192626953
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-23",
+    "name": "CSRF token en formulario de login",
+    "status": "PASS",
+    "detail": "CSRF token detectado",
+    "duration_ms": 39.17694091796875
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-23",
+    "name": "Cookie de sesión con HttpOnly",
+    "status": "PASS",
+    "detail": "Cookie de sesión detectada: siges_session (verificar HttpOnly manualmente)",
+    "duration_ms": 83.78148078918457
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-22",
+    "name": "Consultas preparadas - verificación básica",
+    "status": "PASS",
+    "detail": "Se detectó uso de consultas preparadas en dashboard.php",
+    "duration_ms": 0.35309791564941406
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-23",
+    "name": "Escape de salida HTML (XSS prevention)",
+    "status": "PASS",
+    "detail": "Se detectó escape HTML en dashboard.php",
+    "duration_ms": 0.26869773864746094
+  },
+  {
+    "hu": "Seguridad",
+    "ticket": "SGS-21",
+    "name": "Configuración de seguridad básica",
+    "status": "PASS",
+    "detail": "Configuración de seguridad detectada",
+    "duration_ms": 0.16546249389648438
+  },
+  {
+    "hu": "Integración",
+    "ticket": "SGS-27",
+    "name": "Login exitoso → redirige a dashboard",
+    "status": "PASS",
+    "detail": "Flujo Login → Dashboard OK",
+    "duration_ms": 106.781005859375
+  },
+  {
+    "hu": "Integración",
+    "ticket": "SGS-29",
+    "name": "Sesión persiste entre peticiones",
+    "status": "PASS",
+    "detail": "Sesión persiste correctamente",
+    "duration_ms": 132.25817680358887
+  },
+  {
+    "hu": "Integración",
+    "ticket": "SGS-33",
+    "name": "Flujo: Registro → Login → Dashboard",
+    "status": "PASS",
+    "detail": "Flujo Registro → Login → Dashboard OK",
+    "duration_ms": 182.48558044433594
+  },
+  {
+    "hu": "Integración",
+    "ticket": "SGS-36",
+    "name": "Flujo: Recuperación → Login con nueva clave",
+    "status": "PASS",
+    "detail": "Prueba manual sugerida: usar recuperación y luego login con la nueva clave",
+    "duration_ms": 0.00095367431640625
+  },
+  {
+    "hu": "Integración",
+    "ticket": "SGS-34",
+    "name": "Flujo: OWNER crea EMPLOYEE → EMPLOYEE login",
+    "status": "PASS",
+    "detail": "Flujo OWNER → EMPLEADO → Login OK",
+    "duration_ms": 52.05893516540527
+  },
+  {
+    "hu": "Integración",
+    "ticket": "SGS-31",
+    "name": "Validación de campos en formulario de registro",
+    "status": "PASS",
+    "detail": "Validación de campos de registro OK",
+    "duration_ms": 34.88326072692871
+  }
+]

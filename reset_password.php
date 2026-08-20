@@ -23,7 +23,7 @@ if (is_logged_in()) {
 
 $message = '';
 $message_type = '';
-$token = $_GET['token'] ?? '';
+$token = $_GET['token'] ?? $_POST['token'] ?? '';
 
 // Validar que se proporcione un token
 if (empty($token)) {
@@ -38,7 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($token)) {
     if (!verify_csrf_token($csrf_token)) {
         $message = 'Token de seguridad inválido. Por favor, recargue la página e intente nuevamente.';
         $message_type = 'danger';
+        // Devolver 400 Bad Request para token CSRF inválido
+        http_response_code(400);
     } else {
+
         $password = $_POST['password'] ?? '';
         $password_confirm = $_POST['password_confirm'] ?? '';
 
@@ -74,7 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($token)) {
                 if (!$reset) {
                     $message = 'El enlace de recuperación es inválido o ha expirado. Por favor, solicite uno nuevo.';
                     $message_type = 'danger';
+                    // Devolver 400 Bad Request para token inválido
+                    http_response_code(400);
                 } else {
+
                     // Actualizar contraseña del usuario
                     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 

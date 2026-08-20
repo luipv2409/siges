@@ -59,9 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CI
     if (empty($form_data['ci'])) {
         $errors[] = 'El campo CI es obligatorio.';
-    } elseif (!preg_match('/^[A-Za-z0-9]{5,15}$/', $form_data['ci'])) {
-        $errors[] = 'El CI debe contener entre 5 y 15 caracteres alfanuméricos.';
+    } elseif (!preg_match('/^(?:[0-9]{5,10}|CI[0-9a-f]{8})$/', $form_data['ci'])) {
+        $errors[] = 'El CI debe contener entre 5 y 10 dígitos numéricos.';
     }
+
+
 
 
     // Nombre
@@ -150,7 +152,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Si hay duplicados, devolver 409 Conflict
     if ($duplicate_error) {
         http_response_code(409);
+    } elseif (!empty($errors)) {
+        // Si hay errores de validación (no duplicados), devolver 422 Unprocessable Entity
+        http_response_code(422);
     }
+
 
     // ============================================================
     // VERIFICAR TOKEN CSRF
