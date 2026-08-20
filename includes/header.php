@@ -115,7 +115,13 @@ $user_name = $_SESSION['user_name'] ?? '';
                             <i class="bi bi-gear me-1"></i>Configuración
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>/usuarios.php">
+                            <i class="bi bi-people me-1"></i>Usuarios
+                        </a>
+                    </li>
                 <?php elseif ($user_role === 'EMPLOYEE'): ?>
+
                     <!-- Menú para EMPLEADO (EMPLOYEE) -->
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>/dashboard_employee.php">
@@ -199,10 +205,11 @@ $user_name = $_SESSION['user_name'] ?? '';
                         </a>
                     </li>
                     <li class="nav-item ms-lg-2">
-                        <a class="btn btn-gold btn-sm mt-1 mt-lg-0" href="<?= BASE_URL ?>/registro.php">
+                        <a class="btn btn-gold btn-sm mt-1 mt-lg-0" href="<?= BASE_URL ?>/register.php">
                             <i class="bi bi-person-plus me-1"></i>Registrarse
                         </a>
                     </li>
+
                 <?php endif; ?>
             </ul>
         </div>

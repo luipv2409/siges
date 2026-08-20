@@ -52,8 +52,10 @@ switch ($user_role) {
             ['url' => BASE_URL . '/inventario.php', 'icon' => 'bi-box-seam', 'title' => 'Inventario', 'desc' => 'Control de prendas y ubicaciones'],
             ['url' => BASE_URL . '/reportes.php', 'icon' => 'bi-graph-up', 'title' => 'Reportes', 'desc' => 'Indicadores financieros y KPIs'],
             ['url' => BASE_URL . '/configuracion.php', 'icon' => 'bi-gear', 'title' => 'Configuración', 'desc' => 'Tasas de interés y parámetros'],
+            ['url' => BASE_URL . '/usuarios.php', 'icon' => 'bi-people', 'title' => 'Usuarios', 'desc' => 'Gestionar empleados del sistema'],
         ];
         break;
+
 
     case 'EMPLOYEE':
         $menu_links = [

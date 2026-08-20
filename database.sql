@@ -81,6 +81,49 @@ CREATE TABLE customers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
+-- TABLA: password_resets
+-- Almacena tokens de recuperación de contraseña
+-- ============================================================
+CREATE TABLE password_resets (
+    id          INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+    user_id     INT UNSIGNED     NOT NULL,
+    token_hash  VARCHAR(64)      NOT NULL,
+    expires_at  DATETIME         NOT NULL,
+    used_at     DATETIME         NULL,
+    created_at  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_password_resets_token (token_hash),
+    KEY idx_password_resets_user (user_id),
+    KEY idx_password_resets_expires (expires_at),
+    CONSTRAINT fk_password_resets_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- TABLA: audit_log
+-- Registra intentos de acceso no autorizado y acciones sensibles
+-- ============================================================
+CREATE TABLE audit_log (
+    id          INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+    user_id     INT UNSIGNED     NULL,
+    action      VARCHAR(100)     NOT NULL,
+    description VARCHAR(500)     NULL,
+    ip_address  VARCHAR(45)      NULL,
+    user_agent  VARCHAR(255)     NULL,
+    created_at  TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_audit_log_user (user_id),
+    KEY idx_audit_log_action (action),
+    KEY idx_audit_log_created (created_at),
+    CONSTRAINT fk_audit_log_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
 -- INSERTS INICIALES
 -- ============================================================
 
@@ -94,3 +137,5 @@ INSERT INTO roles (name, description) VALUES
 -- Contraseña: Admin123! (hash generado con password_hash de PHP, algoritmo PASSWORD_DEFAULT)
 INSERT INTO users (role_id, name, email, password_hash, phone, is_active) VALUES
     (1, 'Administrador SIGES', 'admin@siges.com', '$2y$10$76/wAf.q3.oNaDBd/H/eCuEEYEbJg0wq47KD3G6b0LtGhnVdKOUkG', '77712345', 1);
+
+

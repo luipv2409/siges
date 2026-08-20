@@ -58,8 +58,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // En un sistema real, aquí se enviaría un email con un enlace de recuperación.
                 // Por seguridad, siempre mostramos el mismo mensaje (éxito o no).
                 if ($user) {
-                    // Simular envío de email de recuperación
+                    // Generar token de recuperación
                     $reset_token = bin2hex(random_bytes(32));
+                    $token_hash = hash('sha256', $reset_token);
+                    $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+                    // Guardar token en tabla password_resets
+                    $stmt = $pdo->prepare(
+                        'INSERT INTO password_resets (user_id, token_hash, expires_at)
+                         VALUES (:user_id, :token_hash, :expires_at)'
+                    );
+                    $stmt->execute([
+                        ':user_id'    => $user['id'],
+                        ':token_hash' => $token_hash,
+                        ':expires_at' => $expires_at,
+                    ]);
+
                     $reset_link = BASE_URL . '/reset_password.php?token=' . $reset_token;
 
                     // Registrar en log (simulación)
@@ -79,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = 'Error interno del sistema. Por favor, intente nuevamente.';
                 $message_type = 'danger';
             }
+
         }
     }
 }
